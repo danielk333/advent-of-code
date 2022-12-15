@@ -13,7 +13,7 @@ fn read_data() -> String {
     return fs::read_to_string(path).unwrap();
 }
 
-fn parse_data_part1(data: &str) -> Vec<Vec<u32>> {
+fn parse_data(data: &str) -> Vec<Vec<u32>> {
     data
         .lines()
         .filter_map(|line| {
@@ -30,7 +30,7 @@ fn parse_data_part1(data: &str) -> Vec<Vec<u32>> {
 
 fn analyse_data_part1(pairs: Vec<Vec<u32>>) -> u32 {
     let mut number_contain_set = 0;
-    for pair in pairs {
+    for pair in pairs.iter() {
         if (pair[0] >= pair[2] && pair[1] <= pair[3]) 
             || (pair[2] >= pair[0] && pair[3] <= pair[1]) {
             number_contain_set += 1;
@@ -39,10 +39,22 @@ fn analyse_data_part1(pairs: Vec<Vec<u32>>) -> u32 {
     return number_contain_set;
 }
 
+fn analyse_data_part2(pairs: Vec<Vec<u32>>) -> u32 {
+    let mut number_overlap_set = 0;
+    for pair in pairs.iter() {
+        if pair[0] <= pair[3] && pair[2] <= pair[1] {
+                number_overlap_set += 1;
+        }
+    }
+    return number_overlap_set;
+}
+
 fn test_function() {
-    let test_elf_pairs = parse_data_part1(TEST_DATA);
-    let test_contains = analyse_data_part1(test_elf_pairs);
-    println!("test data results: {}", test_contains);
+    let test_elf_pairs = parse_data(TEST_DATA);
+    let test_contains = analyse_data_part1(test_elf_pairs.clone());
+    let test_overlaps = analyse_data_part2(test_elf_pairs);
+    println!("test data results 1: {}", test_contains);
+    println!("test data results 2: {}", test_overlaps);
 }
 
 fn main() {
@@ -50,7 +62,9 @@ fn main() {
 
     let data = read_data();
 
-    let elf_pairs = parse_data_part1(&data);
-    let contains = analyse_data_part1(elf_pairs);
-    println!("data results: {}", contains);
+    let elf_pairs = parse_data(&data);
+    let contains = analyse_data_part1(elf_pairs.clone());
+    let overlaps = analyse_data_part2(elf_pairs.clone());
+    println!("data results 1: {}", contains);
+    println!("data results 2: {}", overlaps);
 }
