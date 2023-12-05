@@ -1,17 +1,10 @@
 use std::fs::read_to_string;
 use std::path::Path;
+use std::time::Instant;
 
 extern crate regex;
-extern crate ndarray;
 
-use ndarray::{Array};
-use regex::{Regex, RegexSet};
-
-const VERBOSE: bool = false;
-
-fn check_string_number(string_pos: &str) -> Option<String> {
-    None
-}
+use regex::{Regex};
 
 
 fn get_data() -> Vec<String> {
@@ -26,8 +19,8 @@ fn get_data() -> Vec<String> {
 }
 
 
-fn part1(lines: &Vec<String>, verbose: bool) {
-    let mut numbers = Array::<i32, _>::zeros(lines.len());
+fn part1(lines: &Vec<String>) {
+    let mut numbers = vec![0; lines.len()];
     let number_regex: Regex = Regex::new("[0-9]").unwrap();
 
     for (ind, line) in lines.iter().enumerate() {
@@ -38,64 +31,77 @@ fn part1(lines: &Vec<String>, verbose: bool) {
         let mut num_str = nums[0].to_string();
         num_str.push_str(nums[nums.len() - 1]);
         numbers[ind] = num_str.parse::<i32>().unwrap();
-        if verbose {
-            println!("{:?} -> {:?}", line, numbers[ind]);
-        }
     }
-    if verbose {
-        println!("{:?}", numbers);
-    }
-    let total = numbers.sum();
+    let total = numbers.iter().sum::<i32>();
     println!("Part 1 - total: {}", total);
 }
 
 
-fn part2(lines: &Vec<String>, verbose: bool) {
-    let mut numbers = Array::<i32, _>::zeros(lines.len());
+fn part2(lines: &Vec<String>) {
+    let mut numbers = vec![0; lines.len()];
 
-    let str_num_set = RegexSet::new(&[
-        r"0-9",
-        r"one",
-        r"two",
-        r"three",
-        r"four",
-        r"five",
-        r"six",
-        r"seven",
-        r"eight",
-        r"nine",
-    ]).unwrap();
-    
-    let str_num_regexes: Vec<_> = str_num_set
-        .patterns()
-        .iter()
-        .map(|pat| Regex::new(pat).unwrap())
-        .collect();
-
-    let number_regex: Regex = Regex::new("[0-9]").unwrap();
-    
     for (ind, line) in lines.iter().enumerate() {
-        let nums: Vec<_> = number_regex
-            .find_iter(line)
-            .map(|m| m.as_str())
-            .collect();
-        let mut num_str = nums[0].to_string();
-        num_str.push_str(nums[nums.len() - 1]);
-        numbers[ind] = num_str.parse::<i32>().unwrap();
-        if verbose {
-            println!("{:?} -> {:?}", line, numbers[ind]);
+        let line_len = line.len();
+        if line_len == 0 {
+            continue
         }
+        let byte_line = line.as_bytes();
+        let mut nums: Vec<char> = Vec::new();
+        let mut ch: u32;
+        let mut res: char;
+        for pos in 0..line_len {
+            ch = byte_line[pos] as u32;
+            if ch >= 48 && ch <= 57 {
+                nums.push(char::from_u32(ch).unwrap());
+                continue
+            }
+            if pos + 2 >= line_len { continue }
+            res = match &line[pos..pos+3] {
+                "one" => '1',
+                "two" => '2',
+                "six" => '6',
+                _ => '-',
+            };
+            if res != '-' { nums.push(res); continue }
+            else if pos + 3 >= line_len { continue }
+            res = match &line[pos..pos+4] {
+                "four" => '4',
+                "five" => '5',
+                "nine" => '9',
+                _ => '-',
+            };
+            if res != '-' { nums.push(res); continue }
+            else if pos + 4 >= line_len { continue }
+            res = match &line[pos..pos+5] {
+                "three" => '3',
+                "seven" => '7',
+                "eight" => '8',
+                _ => '-',
+            };
+            if res != '-' { nums.push(res) }
+        }
+        let mut num_str: String = nums[0].to_string();
+        num_str.push(nums[nums.len() - 1]);
+
+        numbers[ind] = num_str.parse::<i32>().unwrap();
     }
-    if verbose {
-        println!("{:?}", numbers);
-    }
-    let total = numbers.sum();
+    let total = numbers.iter().sum::<i32>();
     println!("Part 2 - total: {}", total);
 }
 
 
 fn main() {
     let lines: Vec<String> = get_data();
-    part1(&lines, VERBOSE);
-    // part2(&lines, VERBOSE);
+
+    let mut now = Instant::now();
+    part1(&lines);
+
+    let mut elapsed = now.elapsed();
+    println!("Elapsed: {:.2?}", elapsed);
+    
+    now = Instant::now();
+    part2(&lines);
+
+    elapsed = now.elapsed();
+    println!("Elapsed: {:.2?}", elapsed);
 }
