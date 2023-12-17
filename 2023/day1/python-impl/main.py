@@ -1,6 +1,4 @@
-import pathlib
-
-file = pathlib.Path("../input")
+file = "../input"
 
 with open(file, "r") as fh:
     lines = list(fh.readlines())
