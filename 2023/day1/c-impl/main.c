@@ -22,6 +22,7 @@ int main() {
         }
     } while (ch != EOF);
 
+    fclose(cursor);
     printf("%d", total);
     return 0;
 }
