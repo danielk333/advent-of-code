@@ -17,3 +17,10 @@ echo "-----------"
 cd python-impl
 time python main.py
 cd ..
+
+echo "C"
+echo "-----------"
+cd c-impl
+./build.sh
+time ./main
+cd ..
