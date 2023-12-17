@@ -93,15 +93,15 @@ fn part2(lines: &Vec<String>) {
 fn main() {
     let lines: Vec<String> = get_data();
 
-    let mut now = Instant::now();
+    // let mut now = Instant::now();
     part1(&lines);
 
-    let mut elapsed = now.elapsed();
-    println!("Elapsed: {:.2?}", elapsed);
+    // let mut elapsed = now.elapsed();
+    // println!("Elapsed: {:.2?}", elapsed);
     
-    now = Instant::now();
-    part2(&lines);
+    // now = Instant::now();
+    // part2(&lines);
 
-    elapsed = now.elapsed();
-    println!("Elapsed: {:.2?}", elapsed);
+    // elapsed = now.elapsed();
+    // println!("Elapsed: {:.2?}", elapsed);
 }
