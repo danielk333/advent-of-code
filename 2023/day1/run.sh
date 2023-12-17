@@ -24,3 +24,10 @@ cd c-impl
 ./build.sh
 time ./main
 cd ..
+
+echo "GO"
+echo "-----------"
+cd go-impl
+go build main.go
+time ./main
+cd ..
