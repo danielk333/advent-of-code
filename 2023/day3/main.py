@@ -1,4 +1,5 @@
 import re
+from pprint import pprint
 file = "input"
 sep = "."
 not_syms = [str(x) for x in range(10)] + [sep]
@@ -10,6 +11,7 @@ with open(file, "r") as fh:
 shape = (len(lines), len(lines[0]) - 1)
 
 numbers = []
+parts = {}
 number_regex = re.compile(r"[0-9]+")
 
 def get_border_coords(y, start, end, size):
@@ -54,24 +56,44 @@ def test_border_select(y, x, width):
 
 for ind, line in enumerate(lines):
     numbers += [
-        # row, start column, end column, number, included
-        (ind, m.start(0), m.end(0), int(line[m.start(0):m.end(0)]), False)
+        # row, start column, end column, number
+        (ind, m.start(0), m.end(0), int(line[m.start(0):m.end(0)]))
         for m in number_regex.finditer(line)
     ]
 
 # print(numbers)
 # exit()
 
-total_nums = 0
-
-for ind, (y, x0, x1, num, include) in enumerate(numbers):
+include = [False]*len(numbers)
+for ind, (y, x0, x1, num) in enumerate(numbers):
     border_coords = get_border_coords(y, x0, x1, shape)
 
     for by, bx in border_coords:
         if lines[by][bx] in not_syms:
             continue
-        include = True
-    if include:
-        total_nums += num
+
+        if by not in parts: parts[by] = {}
+        if bx not in parts[by]: parts[by][bx] = (lines[by][bx], [])
+        parts[by][bx][1].append(num)
+        include[ind] = True
+
+# pprint(parts)
+
+# Analyse data
+total_nums = 0
+for use, data in zip(include, numbers):
+    if use:
+        total_nums += data[3]
 
 print(f"Part 1: {total_nums}")
+
+total_gear_ratios = 0
+for y in parts:
+    for x in parts[y]:
+        part, nums = parts[y][x]
+        if part != "*" or len(nums) != 2:
+            continue
+        # print(part, nums)
+        total_gear_ratios += nums[0]*nums[1]
+
+print(f"Part 2: {total_gear_ratios}")
